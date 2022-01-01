@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<style>
+    #loginbox {
+        display: block;
+        width: 33.33%;
+        padding: 2% 2%;
+        margin: auto;
+        border-radius: 10px;
+        border: 1px solid #3385ff;
+    }
+
+    #banner_acc,
+    #banner_pw {
+        display: block;
+        width: 50%;
+        margin: auto;
+    }
+
+    #accInfo {
+        display: block;
+        width: 20%;
+        margin: auto;
+    }
+
+    #textfillin_acc,
+    #textfillin_pw {
+        display: block;
+        border-radius: 5px;
+        width: 90%;
+        height: 300%;
+        font-size: 16px;
+        padding: 5%;
+        margin: auto;
+        box-sizing: border-box;
+    }
+
+    #forgotEmail {
+        width: 90%;
+        margin: auto;
+    }
+
+    #forgotEmail,
+    #createAcc,
+    #forgotPw {
+        display: block;
+        color: #3385ff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    #forgotEmail:hover,
+    #createAcc:hover {
+        text-decoration: underline;
+    }
+
+    #next_acc,
+    #next_pw {
+        display: block;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        background-color: #3385ff;
+        border-radius: 5px;
+        padding: 2% 5%;
+        text-align: center;
+        float: right;
+        width: 60%;
+    }
+
+    #next_acc:hover,
+    #next_pw:hover {
+        background-color: #0066ff;
+        cursor: pointer;
+    }
+</style>
+
+<head>
+    <link rel="icon" type="image/jpg" href="img/icon.JPG">
+    <link rel="stylesheet" href="global.css">
+    <title>Login</title>
+
+    <script type="text/javascript" src="doFileExists.js"></script>
+
+    <script type="text/javascript" src="acc/account.js"></script>
+    <script type="text/javascript" src="acc/verify_indexSearch.js"></script>
+    <script type="text/javascript" src="acc/verify_pw.js"></script>
+</head>
+
+<body>
+    <div>
+        <div id="border"></div>
+        <div id="loginbox">
+            <div id="acc">
+                <img id="banner_acc" src="img/banner.JPG">
+                <h2 style="text-align:center">Sign In</h2>
+                <p style="text-align:center">To continue to MeTube</p>
+                <div style="height:30px"></div>
+                <input type="text" id="textfillin_acc" placeholder="Email or phone">
+                <br>
+                <a href="" id="forgotEmail">
+                    <p>Forgot email?</p>
+                </a>
+                <div style="height:30px"></div>
+                <table style="border:none;width:90%;margin:auto;table-layout:fixed">
+                    <tr>
+                        <td><a href="" id="createAcc">
+                                <p>Create Account</p>
+                            </a></td>
+                        <td><button type="button" id="next_acc" onClick="requestVerify_acc(textfillin_acc.value);">
+                                <p>Next</p>
+                            </button></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="pw">
+                <img id="banner_pw" src="img/banner.JPG">
+                <img id="accIcon" id="accIcon" src="">
+                <h2 style="text-align:center" id="accName">MeTube</h2>
+                <div style="height:30px"></div>
+                <input type="password" id="textfillin_pw" placeholder="Enter your password">
+                <br>
+                <input type="checkbox" id="showPw" onClick="showPassword()"><label style="font-family:Arial"> Show
+                    Password</label>
+                <div style="height:30px"></div>
+                <table style="border:none;width:90%;margin:auto;table-layout:fixed">
+                    <tr>
+                        <td><a href="" id="forgotPw">
+                                <p>Forgot Password?</p>
+                            </a></td>
+                        <td><button type="button" id="next_pw" onClick="requestVerify_pw(textfillin_pw.value);">
+                                <p>Next</p>
+                            </button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var uid = -1;
+    var right_pw = false;
+
+    function initializeWindow() {
+        document.getElementById("pw").style.display = "none";
+    }
+    initializeWindow();
+
+    function requestVerify_acc(acct) {
+        uid = verify_indexSearch(acct);
+        if (uid != -1) {
+            document.getElementById("acc").style.display = "none";
+            document.getElementById("pw").style.display = "block";
+            /*
+            if (doFileExists("acc/icon/icon_"+acc[id]+"jpg")) {
+                document.getElementById("accIcon").src = "acc/icon/icon_" + acc[id] + "jpg";
+            }
+            */
+            document.getElementById("accName").innerHTML = acc[uid].un;
+            var accIcon = document.getElementById("accIcon");
+            accIcon.src = "acc/icon/icon_" + parseInt(acc[uid].id) + ".jpg";
+            accIcon.style.display = "block";
+            accIcon.style.width = "25%";
+            accIcon.style.margin = "auto";
+        }
+        else {
+            alert("This account does not exist!");
+            document.getElementById("textfillin_acc").value = "";
+        }
+    }
+
+    function requestVerify_pw(pmt) {
+        if (uid!=-1) {
+            right_pw = verify_pw(uid, pmt);
+        }
+        else right_pw = false;
+        if (right_pw) {
+            sessionStorage.setItem('verified_user', uid);
+            window.location.href = "index.html";
+            return;
+        }
+        else {
+            alert("Wrong Password. Fill it again.");
+            document.getElementById("textfillin_pw").value = "";
+            return;
+        }
+    }
+
+    function resizeLogInHeight() {
+        var border = document.getElementById("border");
+        var loginboxHeight = parseInt(document.getElementById("loginbox").offsetHeight);
+        var winHeight = parseInt(window.innerHeight);
+        border.style.height = (winHeight - loginboxHeight) / 2 + "px";
+    }
+    resizeLogInHeight();
+
+    window.addEventListener('resize', function (event) {
+        resizeLogInHeight();
+    });
+
+    function showPassword() {
+        var textfillin = document.getElementById("textfillin_pw");
+        if (textfillin.type == "text") textfillin.type = "password";
+        else textfillin.type = "text";
+    }
+</script>
+
+</html>

@@ -1,76 +1,6 @@
 <!DOCTYPE html>
 <html>
 <style>
-    p {
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    h2 {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 36px;
-        font-weight: bold;
-    }
-
-    #header {
-        width: 100%;
-        position: fixed;
-        top: 0;
-        background-color: white;
-    }
-
-    #title {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 36px;
-        font-weight: bold;
-    }
-
-    #searchbar {
-        display: block;
-        width: 95%;
-        height: 24px;
-        border-radius: 5px;
-        padding: 2% 2%;
-        margin: auto;
-    }
-
-    #searchbutton {
-        display: block;
-        width: 95%;
-        height: 24px;
-        padding: 2% 2%;
-        float: left;
-        background-color: #3385ff;
-        color: white;
-        border-radius: 5px;
-        font-family: Arial, Helvetica, sans-serif;
-        text-align: center;
-        font-size: 22px;
-        text-decoration: none;
-    }
-
-    #searchbutton:hover {
-        background-color: #0066ff;
-    }
-
-    #login {
-        width: 95%;
-        height: 36px;
-        border-radius: 5px;
-        border: 1px solid #3385ff;
-        color: #3385ff;
-        font-size: 32px;
-        text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
-        margin: auto;
-        padding: 5% 5%;
-        text-align: center;
-    }
-
-    #login:hover {
-        border: 1px solid #0066ff;
-        color: #0066ff;
-    }
-
     #advertise {
         display: block;
         padding: 5% 5%;
@@ -148,7 +78,10 @@
 <head>
     <script type="text/javascript" src="video.js"></script>
     <script type="text/javascript" src="trending.js"></script>
+    <script type="text/javascript" src="acc/account.js"></script>
     <link rel="icon" type="image/jpg" href="img/icon.JPG">
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="header.css">
     <title>MeTube</title>
 </head>
 
@@ -162,7 +95,17 @@
                 <td width="5%"></td>
                 <td width="10%"><a href="" id="searchbutton">Search</a></td>
                 <td width="5%"></td>
-                <td width="15%"><a href="" id="login">Login</a></td>
+                <td width="13%">
+                    <a href="login.html" id="login">Login</a>
+                    <button type="button" id="userInfo_btn" onClick="userInfo_btn_Clicked()">
+                        <table style="border:none" id="userInfo">
+                            <tr>
+                                <td width="30%"><img id="userInfo_icon" src=""></td>
+                                <td width="70%" id="userInfo_un"></td>
+                            </tr>
+                        </table>
+                    </button>
+                </td>
                 <td></td>
             </tr>
         </table>
@@ -282,17 +225,17 @@
             thmn.style.height = thmn.offsetWidth * 9 / 16 + "px";
             var cellHeight = document.getElementById("innertbl" + Math.floor(i / 4) + "" + i % 4).offsetHeight;
             if (parseInt(cellHeight) > max) max = parseInt(cellHeight);
-            for (j=0;j<16;j++) {
-                if (createInnerTrend_trueCell(j%4, Math.floor(j/4))!=3) {
-                    var trendcell = document.getElementById(Math.floor(i/4)+""+i%4+"_trendcell"+Math.floor(j/4)+""+j%4);
+            for (j = 0; j < 16; j++) {
+                if (createInnerTrend_trueCell(j % 4, Math.floor(j / 4)) != 3) {
+                    var trendcell = document.getElementById(Math.floor(i / 4) + "" + i % 4 + "_trendcell" + Math.floor(j / 4) + "" + j % 4);
                     if (trendcell) {
                         trendcell.style.border = "none";
-                        if (j%4==0 && Math.floor(j/4)==0) trendcell.style.border = "1px solid black";
-                        if (j%4==0 && Math.floor(j/4)>0) trendcell.style.width = "25%";
-                        if (j%4==1 && Math.floor(j/4)>0) trendcell.style.width = "75%";
+                        if (j % 4 == 0 && Math.floor(j / 4) == 0) trendcell.style.border = "1px solid black";
+                        if (j % 4 == 0 && Math.floor(j / 4) > 0) trendcell.style.width = "25%";
+                        if (j % 4 == 1 && Math.floor(j / 4) > 0) trendcell.style.width = "75%";
                         trendcell.style.fontFamily = "Arial";
-                        if (j%4==1 && Math.floor(j/4)==1) trendcell.style.fontWeight = "bold";
-                        if (j%4==1 && Math.floor(j/4)>1) trendcell.style.color = "#666";
+                        if (j % 4 == 1 && Math.floor(j / 4) == 1) trendcell.style.fontWeight = "bold";
+                        if (j % 4 == 1 && Math.floor(j / 4) > 1) trendcell.style.color = "#666";
                     }
                 }
             }
@@ -334,7 +277,7 @@
                 console.log(document.getElementById(j + "" + i + "_trendcell00").offsetWidth);
                 document.getElementById(j + "" + i + "_trendcell00").style.height =
                     document.getElementById(j + "" + i + "_trendcell00").offsetWidth * 9 / 16 + "px";
-                document.getElementById("trend"+j+""+i).style.border = "none";
+                document.getElementById("trend" + j + "" + i).style.border = "none";
             }
         }
         initial_style();
@@ -389,6 +332,35 @@
             trend.style.height = max * 1 + "px";
         }
     });
+</script>
+
+<script>
+    function changeLogo() {
+        var user = sessionStorage.getItem('verified_user');
+        if (user == -1) return;
+        console.log(user);
+        document.getElementById("login").style.display = "none";
+        var userInfo_icon = document.getElementById("userInfo_icon");
+        var userInfo_un = document.getElementById("userInfo_un");
+        userInfo_icon.src = "acc/icon/icon_" + parseInt(acc[parseInt(user)].id) + ".jpg";
+        userInfo_icon.display = "block";
+        userInfo_icon.margin = "auto";
+        userInfo_icon.style.width = "75%";
+        userInfo_icon.style.boxSizing = "border-box";
+        console.log(userInfo_icon.offsetWidth);
+        userInfo_un.innerHTML = acc[parseInt(user)].un;
+        userInfo_un.style.fontFamily = "Arial";
+        userInfo_un.style.width = "70%";
+        userInfo_un.style.textAlign = "left";
+        document.getElementById("userInfo_btn").style.display = "block";
+    }
+    if (!(sessionStorage.getItem('verified_user') === null)) changeLogo();
+    else document.getElementById("userInfo_btn").style.display = "none";
+
+    function userInfo_btn_Clicked() {
+        sessionStorage.removeItem('verified_user');
+        location.reload();
+    }
 </script>
 
 </html>
